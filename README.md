@@ -1,13 +1,26 @@
 # GymFit-Backend
 
+Backend of an application supporting gym management.
+
+## Table of contents
+
+* [General info](#general-info)
+* [Demo](#demo)
+* [Roles](#roles)
+* [Technologies](#technologies)
+* [Usage technologies](#usage-technologies)
+
 ## General info
 
-Backend of an application supporting gym management. There are 3 roles in the application:
+The application implemented is used to manage gym passes. Nowadays, buying and selling a pass is a basic operation at
+sports and recreation facilities. In application are 3 roles:
 <ul>
-<li>Administrator</li>
-<li>Customer</li>
-<li>Receptionist</li>
+<li><b>Customer</b></li>
+<li><b>Receptionist</b></li>
+<li><b>Administrator</b></li>
 </ul>
+
+A discussion of the possibility of each role is set out [below](#roles).
 
 ## Demo
 
@@ -21,20 +34,90 @@ Backend of an application supporting gym management. There are 3 roles in the ap
 <p><b>Receptionist:</b></p>
 <p>Login: <i>receptionist.example</i> Password: <i>ReceptionistSecretPassword532#</i></p>
 
+## Roles
+
+### Customer can:
+
+<ul>
+<li>Possibility to create an account on the public website</li>
+<li>Logging into the system</li>
+<li>Resetting your password by email</li>
+<li>Viewing and editing your personal data</li>
+<li>Ordering a pass</li>
+<li>Viewing historical invoices</li>
+<li>Cancel the order</li>
+<li>View the validity of your pass</li>
+<li>View your access card</li>
+<li>Change your password</li>
+<li>View transfer details for an unfinished transaction</li>
+</ul>
+
+### Receptionist can:
+
+<ul>
+<li>Logging into the system</li>
+<li>Password reset via email</li>
+<li>Ordering a pass for the customer (the customer can buy a pass on the spot by showing his access card)</li>
+<li>Acceptance of payment for the order</li>
+<li>Checking the validity status of the pass by the customer's card number</li>
+<li>Change your password</li>
+<li>Add a customer to the service</li>
+<li>Display a list of active and inactive customers</li>
+<li>Deactivate a customer's account</li>
+<li>Change the password of a specific customer</li>
+<li>View the data of an individual customer</li>
+</ul>
+
+### Administrator - has access to all the functionalities as the receptionist and addition can:
+
+<ul>
+<li>Add a receptionist to the system</li>
+<li>Display a list of active and inactive receptionists</li>
+<li>Display the data of an individual receptionist</li>
+<li>Deactivate the account of a receptionist</li>
+<li>Change the password of an individual receptionist</li>
+<li>Display the company data</li>
+<li>Edit company data</li>
+<li>Display the tax rate</li>
+<li>Edit tax rate</li>
+</ul>
+
 ## Technologies
 
 <ul>
 <li>Java 13</li>
 <li>Spring Boot</li>
 <li>Spring Security</li>
-<li>JWT</li>
+<li>JWT 0.9.1</li>
 <li>Postgresql 11</li>
-<li>Lombok</li>
-<li>Log4j</li>
+<li>Lombok 1.18.12</li>
+<li>Log4j 2.13.3</li>
 </ul>
 
-## Examples
+## Usage technologies:
 
-### In Polish
+### Lombok
 
-### In English
+[<li>Builder</li>](../master/src/main/java/pl/lakomika/gymfit/entity/PasswordReset.java)
+[<li>Data</li>](../master/src/main/java/pl/lakomika/gymfit/entity/PasswordReset.java)
+
+### Log4j/JWT
+
+[<li>Log</li>](../master/src/main/java/pl/lakomika/gymfit/configuration/security/jwt/JwtUtils.java)
+[<li>JwtUtils</li>](../master/src/main/java/pl/lakomika/gymfit/configuration/security/jwt/JwtUtils.java)
+
+### Spring Boot
+
+<b>REST API</b>
+[<li>Controller</li>](../master/src/main/java/pl/lakomika/gymfit/controllers/TaxController.java)
+[<li>Service</li>](../master/src/main/java/pl/lakomika/gymfit/services/InvoiceService.java)
+[<li>Repository</li>](../master/src/main/java/pl/lakomika/gymfit/repository/InvoiceRepository.java)
+[<li>DTO</li>](../master/src/main/java/pl/lakomika/gymfit/DTO/invoice/InvoiceCreateClientDataRequest.java)
+
+### Spring Security
+
+[<li>SecurityConfiguration</li>](../master/src/main/java/pl/lakomika/gymfit/configuration/security/SecurityConfiguration.java)
+
+### Postgresql
+
+[<li>Repository</li>](../master/src/main/java/pl/lakomika/gymfit/repository/InvoiceRepository.java)
