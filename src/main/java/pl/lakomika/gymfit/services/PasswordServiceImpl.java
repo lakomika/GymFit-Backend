@@ -62,25 +62,23 @@ public class PasswordServiceImpl implements PasswordService {
 
     @Override
     public void sendEmailToResetPassword(String email) {
-        if (userAppRepository.existsByEmail(email)) {
-            String token = UUID.randomUUID().toString();
-            val user = userAppRepository.getUserByEmail(email);
-            val passwordResetToken = PasswordReset.builder()
-                    .token(token)
-                    .user(user)
-                    .status(true)
-                    .dateCreate(new Date())
-                    .build();
-            passwordResetRepository.cancelAllTokenByUserId(user.getId());
-            passwordResetRepository.save(passwordResetToken);
-            val context = new Context();
-            context.setVariable("link", urlFrontend + "/reset-password/" + token);
-            val body = templateEngine.process("resetPasswordPL", context);
-            emailService.sendEmail(email, "Resetowanie hasła", body);
-        } else {
+        if (!userAppRepository.existsByEmail(email)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email no exits in database");
         }
-
+        String token = UUID.randomUUID().toString();
+        val user = userAppRepository.getUserByEmail(email);
+        val passwordResetToken = PasswordReset.builder()
+                .token(token)
+                .user(user)
+                .status(true)
+                .dateCreate(new Date())
+                .build();
+        passwordResetRepository.cancelAllTokenByUserId(user.getId());
+        passwordResetRepository.save(passwordResetToken);
+        val context = new Context();
+        context.setVariable("link", urlFrontend + "/reset-password/" + token);
+        val body = templateEngine.process("resetPasswordPL", context);
+        emailService.sendEmail(email, "Resetowanie hasła", body);
     }
 
 }

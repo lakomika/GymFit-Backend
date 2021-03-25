@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import pl.lakomika.gymfit.DTO.client.*;
 import pl.lakomika.gymfit.entity.Client;
 import pl.lakomika.gymfit.entity.UserApp;
@@ -62,7 +64,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ResponseEntity<?> registerClientOnThePublicContent(
+    public ClientCreateResponse registerClientOnThePublicContent(
             ClientCreateOnThePublicContentRequest requestDataClient) {
 
         val modelMapper = new ModelMapper();
@@ -81,11 +83,9 @@ public class ClientServiceImpl implements ClientService {
 
         }
         if (!errorMessage.equals("")) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new ClientCreateResponse("Dane takie jak "
-                            + errorMessage
-                            + " występują już w bazie danych!"));
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dane takie jak"
+                    + errorMessage +
+                    "występują już w bazie danych!");
         } else {
             clientData.setEndOfThePass(null);
             clientData.setNumberCard(new Date().getTime());
@@ -100,7 +100,7 @@ public class ClientServiceImpl implements ClientService {
                     .active(true)
                     .build();
             userAppRepository.save(userSaving);
-            return ResponseEntity.ok(new ClientCreateResponse("Rejestracja powiodła się!"));
+            return new ClientCreateResponse("Rejestracja powiodła się!");
 
         }
     }
@@ -140,12 +140,12 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ResponseEntity<?> getNumberAccessCard() {
-        return ResponseEntity.ok(new ClientAccessCardResponse(userAppRepository.getNumberAccessCardByUserAppId(UserAppData.getId())));
+    public ClientAccessCardResponse getNumberAccessCard() {
+        return new ClientAccessCardResponse(userAppRepository.getNumberAccessCardByUserAppId(UserAppData.getId()));
     }
 
     @Override
-    public ResponseEntity<?> getDataClientAboutGymPass(Long numberCard) {
+    public ClientDataAboutGymPassResponse getDataClientAboutGymPass(Long numberCard) {
         val clientData = clientRepository.getDataAboutGymPass(numberCard);
         val clientDataAboutGymPassResponse = ClientDataAboutGymPassResponse.transferData(clientData);
         val dateHelper = Calendar.getInstance();
@@ -158,7 +158,7 @@ public class ClientServiceImpl implements ClientService {
             else clientDataAboutGymPassResponse.setStatus("INVALID");
         } else clientDataAboutGymPassResponse.setStatus("INVALID");
 
-        return ResponseEntity.ok(clientDataAboutGymPassResponse);
+        return clientDataAboutGymPassResponse;
 
     }
 
@@ -178,7 +178,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ResponseEntity<?> getBasicDataClient() {
+    public ClientDataAboutGymPassResponse getBasicDataClient() {
         val idUserApp = UserAppData.getId();
         val userAppClient = userAppRepository.getById(idUserApp);
         return getDataClientAboutGymPass(userAppClient.getClient().getNumberCard());
@@ -200,8 +200,8 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ResponseEntity<Date> getClientDateOfEndGymPass() {
+    public Date getClientDateOfEndGymPass() {
         val userClient = userAppRepository.getById(UserAppData.getId());
-        return ResponseEntity.ok(userClient.getClient().getEndOfThePass());
+        return userClient.getClient().getEndOfThePass();
     }
 }

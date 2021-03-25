@@ -3,9 +3,9 @@ package pl.lakomika.gymfit.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import pl.lakomika.gymfit.DTO.gymMembership.GymMemberShipAllDataResponse;
 import pl.lakomika.gymfit.DTO.gymMembership.GymMemberShipsResponse;
 import pl.lakomika.gymfit.DTO.gymMembership.GymMembershipAddRequest;
 import pl.lakomika.gymfit.services.GymMembershipService;
@@ -23,8 +23,8 @@ public class GymMembershipController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/add-gym-membership")
-    public ResponseEntity<?> addGymMembership(@RequestBody GymMembershipAddRequest gymMembership) {
-        return gymMembershipService.save(gymMembership);
+    public void addGymMembership(@RequestBody GymMembershipAddRequest gymMembership) {
+        gymMembershipService.save(gymMembership);
     }
 
     @PreAuthorize("hasAnyRole('CLIENT','ADMIN','RECEPTIONIST')")
@@ -41,13 +41,13 @@ public class GymMembershipController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/deactivation-gym-membership")
-    public ResponseEntity<?> deactivationGymMembership(@RequestParam Long gymMembershipIdRequest) {
-        return gymMembershipService.changeStatus(gymMembershipIdRequest, false);
+    public void deactivationGymMembership(@RequestParam Long gymMembershipIdRequest) {
+        gymMembershipService.changeStatus(gymMembershipIdRequest, false);
     }
 
     @PreAuthorize("hasRole('CLIENT')")
     @GetMapping("/get-active-gym-pass-by-id")
-    public ResponseEntity<?> getActiveGymPassById(@RequestParam Long id) {
+    public GymMemberShipAllDataResponse getActiveGymPassById(@RequestParam Long id) {
         return gymMembershipService.getActiveGymPassById(id);
     }
 }

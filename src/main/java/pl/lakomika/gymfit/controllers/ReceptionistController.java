@@ -3,9 +3,9 @@ package pl.lakomika.gymfit.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import pl.lakomika.gymfit.DTO.client.ClientCreateResponse;
 import pl.lakomika.gymfit.DTO.receptionist.ReceptionistCreateRequest;
 import pl.lakomika.gymfit.DTO.receptionist.UserAppReceptionistDTO;
 import pl.lakomika.gymfit.services.ReceptionistService;
@@ -25,7 +25,7 @@ public class ReceptionistController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/add-receptionist")
-    public ResponseEntity<?> addReceptionistByAdmin(@Valid @RequestBody ReceptionistCreateRequest receptionistCreateRequest) {
+    public ClientCreateResponse addReceptionistByAdmin(@Valid @RequestBody ReceptionistCreateRequest receptionistCreateRequest) {
         return receptionistService.addReceptionistByAdmin(receptionistCreateRequest);
     }
 

@@ -12,20 +12,20 @@ public interface ClientService {
 
     Page<UserAppClientDTO> getClientsByStatus(int page, int size, boolean isActive);
 
-    ResponseEntity<?> registerClientOnThePublicContent(
+    ClientCreateResponse registerClientOnThePublicContent(
             ClientCreateOnThePublicContentRequest clientCreate);
 
-    ResponseEntity<?> getNumberAccessCard();
+    ClientAccessCardResponse getNumberAccessCard();
 
-    ResponseEntity<?> getDataClientAboutGymPass(Long numberCard);
+    ClientDataAboutGymPassResponse getDataClientAboutGymPass(Long numberCard);
 
     ResponseEntity<?> saveClientByReceptionistOrAdmin(ClientCreateByReceptionistOrAdminRequest clientCreateByReceptionistOrAdmin);
 
-    ResponseEntity<?> getBasicDataClient();
+    ClientDataAboutGymPassResponse getBasicDataClient();
 
     ClientProfileResponse getProfile();
 
     void editClientProfile(ClientUpdateDataRequest clientUpdateData);
 
-    ResponseEntity<Date> getClientDateOfEndGymPass();
+    Date getClientDateOfEndGymPass();
 }

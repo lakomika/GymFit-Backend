@@ -6,8 +6,9 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import pl.lakomika.gymfit.DTO.client.ClientCreateResponse;
 import pl.lakomika.gymfit.DTO.receptionist.ReceptionistCreateRequest;
 import pl.lakomika.gymfit.DTO.receptionist.UserAppReceptionistDTO;
@@ -42,7 +43,7 @@ public class ReceptionistServiceImpl implements ReceptionistService {
     }
 
     @Override
-    public ResponseEntity<?> addReceptionistByAdmin(ReceptionistCreateRequest receptionistCreateRequest) {
+    public ClientCreateResponse addReceptionistByAdmin(ReceptionistCreateRequest receptionistCreateRequest) {
 
         val modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
@@ -60,9 +61,7 @@ public class ReceptionistServiceImpl implements ReceptionistService {
 
         }
         if (isError) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new ClientCreateResponse("Dane takie jak" + errorMessage + " występują już w bazie danych!"));
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dane takie jak" + errorMessage + " występują już w bazie danych!");
         } else {
             PasswordOperation passwordOperation = new PasswordOperation(10);
             userAppReceptionist.setRole(Role.RECEPTIONIST.getValue());
@@ -71,7 +70,7 @@ public class ReceptionistServiceImpl implements ReceptionistService {
             userAppReceptionist.setActive(true);
             userAppReceptionist.setClient(null);
             userAppRepository.save(userAppReceptionist);
-            return ResponseEntity.ok(new ClientCreateResponse(null, userAppReceptionist.getUsername(), passwordOperation.getPassword(), "Success"));
+            return new ClientCreateResponse(null, userAppReceptionist.getUsername(), passwordOperation.getPassword(), "Success");
         }
     }
 }

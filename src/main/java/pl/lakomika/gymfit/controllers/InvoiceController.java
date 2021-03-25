@@ -1,12 +1,9 @@
 package pl.lakomika.gymfit.controllers;
 
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import pl.lakomika.gymfit.DTO.invoice.InvoiceCreateRequest;
-import pl.lakomika.gymfit.DTO.invoice.InvoiceHistoryOfOrdersPassResponse;
-import pl.lakomika.gymfit.DTO.invoice.InvoicesPendingResponse;
+import pl.lakomika.gymfit.DTO.invoice.*;
 import pl.lakomika.gymfit.services.InvoiceService;
 
 @CrossOrigin
@@ -21,7 +18,7 @@ public class InvoiceController {
 
     @PreAuthorize("hasRole('CLIENT')")
     @PostMapping("/buy-gym-pass-by-client")
-    public ResponseEntity<?> buyGymPassByClient(@RequestBody InvoiceCreateRequest invoiceCreateRequest) {
+    public InvoiceDataTransferResponse buyGymPassByClient(@RequestBody InvoiceCreateRequest invoiceCreateRequest) {
         return invoiceService.buyGymPassByClient(invoiceCreateRequest);
     }
 
@@ -33,8 +30,8 @@ public class InvoiceController {
 
     @PreAuthorize("hasAnyRole('CLIENT','ADMIN','RECEPTIONIST')")
     @PutMapping("/history-of-orders/cancellation-order")
-    public ResponseEntity<?> cancellationOrder(@RequestParam Long orderIdRequest) {
-        return invoiceService.cancellationOrder(orderIdRequest);
+    public void cancellationOrder(@RequestParam Long orderIdRequest) {
+        invoiceService.cancellationOrder(orderIdRequest);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST')")
@@ -45,32 +42,32 @@ public class InvoiceController {
 
     @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST')")
     @PutMapping("/history-of-orders/confirm-delivery-of-funds")
-    public ResponseEntity<?> confirmDeliveryOdFunds(@RequestParam Long orderIdRequest) {
-        return invoiceService.confirmDeliveryOfFunds(orderIdRequest);
+    public void confirmDeliveryOdFunds(@RequestParam Long orderIdRequest) {
+        invoiceService.confirmDeliveryOfFunds(orderIdRequest);
     }
 
     @PreAuthorize("hasRole('CLIENT')")
     @GetMapping("/is-pending-invoice")
-    public ResponseEntity<?> isPendingInvoice() {
+    public InvoiceCreateIsPendingInvoiceResponse isPendingInvoice() {
         return invoiceService.isPending();
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST')")
     @PostMapping("/save-invoice")
-    public ResponseEntity<?> saveInvoiceByReceptionistOrAdmin(@RequestParam Long gymMembershipId,
-                                                              @RequestParam String numberCard) {
-        return invoiceService.saveInvoiceByReceptionistOrAdmin(gymMembershipId, Long.valueOf(numberCard));
+    public void saveInvoiceByReceptionistOrAdmin(@RequestParam Long gymMembershipId,
+                                                 @RequestParam String numberCard) {
+        invoiceService.saveInvoiceByReceptionistOrAdmin(gymMembershipId, Long.valueOf(numberCard));
     }
 
     @PreAuthorize("hasRole('CLIENT')")
     @GetMapping("/invoice-paid")
-    public ResponseEntity<?> getPaidInvoiceById(@RequestParam Long invoiceId) {
+    public InvoiceResponse getPaidInvoiceById(@RequestParam Long invoiceId) {
         return invoiceService.getPaidInvoiceById(invoiceId);
     }
 
     @PreAuthorize("hasRole('CLIENT')")
     @GetMapping("/data-transfer")
-    public ResponseEntity<?> getDataTransferByUnpaidInvoiceId(@RequestParam Long invoiceId) {
+    public InvoiceDataTransferResponse getDataTransferByUnpaidInvoiceId(@RequestParam Long invoiceId) {
         return invoiceService.getDataTransferByUnpaidInvoiceId(invoiceId);
     }
 

@@ -24,8 +24,8 @@ public class ClientController extends BaseController {
 
     @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST','CLIENT')")
     @GetMapping("/get-personal-data")
-    public ResponseEntity<?> getPersonalDataClient() {
-        return ResponseEntity.ok(clientService.getPersonalData());
+    public ClientPersonalDataResponse getPersonalDataClient() {
+        return clientService.getPersonalData();
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST')")
@@ -37,9 +37,9 @@ public class ClientController extends BaseController {
 
 
     @PostMapping("/add-client-on-the-public-content")
-    public ResponseEntity<?> registerClientOnThePublicContent(
+    public void registerClientOnThePublicContent(
             @Valid @RequestBody ClientCreateOnThePublicContentRequest client) {
-        return clientService.registerClientOnThePublicContent(client);
+        clientService.registerClientOnThePublicContent(client);
     }
 
 
@@ -52,20 +52,19 @@ public class ClientController extends BaseController {
 
     @PreAuthorize("hasAnyRole('CLIENT')")
     @GetMapping("/get-number-access-card")
-    public ResponseEntity<?> getNumberAccessCard() {
+    public ClientAccessCardResponse getNumberAccessCard() {
         return clientService.getNumberAccessCard();
-
     }
 
     @PreAuthorize("hasAnyRole('RECEPTIONIST','ADMIN')")
     @GetMapping("/get-data-about-gym-pass")
-    public ResponseEntity<?> getDataClientAboutGymPass(@RequestParam(value = "numberCard") String numberCard) {
+    public ClientDataAboutGymPassResponse getDataClientAboutGymPass(@RequestParam(value = "numberCard") String numberCard) {
         return clientService.getDataClientAboutGymPass(Long.valueOf(numberCard));
     }
 
     @PreAuthorize("hasAnyRole('CLIENT')")
     @GetMapping("/get-client-basic-data")
-    public ResponseEntity<?> getBasicDataClient() {
+    public ClientDataAboutGymPassResponse getBasicDataClient() {
         return clientService.getBasicDataClient();
     }
 
@@ -84,7 +83,7 @@ public class ClientController extends BaseController {
 
     @PreAuthorize("hasAnyRole('CLIENT')")
     @GetMapping("/get-date-of-end-gym-pass")
-    public ResponseEntity<Date> getClientDateOfEndGymPass() {
+    public Date getClientDateOfEndGymPass() {
         return clientService.getClientDateOfEndGymPass();
     }
 

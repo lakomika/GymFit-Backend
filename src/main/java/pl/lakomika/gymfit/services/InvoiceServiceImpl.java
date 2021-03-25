@@ -6,8 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import pl.lakomika.gymfit.DTO.invoice.*;
 import pl.lakomika.gymfit.entity.GymMembership;
 import pl.lakomika.gymfit.entity.UserApp;
@@ -45,14 +46,14 @@ public class InvoiceServiceImpl implements InvoiceService {
 
 
     @Override
-    public ResponseEntity<?> buyGymPassByClient(InvoiceCreateRequest request) {
+    public InvoiceDataTransferResponse buyGymPassByClient(InvoiceCreateRequest request) {
         val gymMembership = gymMembershipRepository.getActiveGymPassById(request.getGymMembershipId());
         val user = userAppRepository.getById(UserAppData.getId());
         val invoice = createInvoice(request, user,
                 TypeOfTransaction.BANK_TRANSFER.getValue(), gymMembership);
         val newInvoice = invoiceRepository.save(invoice);
         val dataTransfer = InvoiceDataTransferResponse.toResponse(newInvoice);
-        return ResponseEntity.ok(dataTransfer);
+        return dataTransfer;
     }
 
 
@@ -92,9 +93,8 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public ResponseEntity<?> cancellationOrder(Long idOrder) {
+    public void cancellationOrder(Long idOrder) {
         invoiceRepository.cancellationOrder(InvoiceStatus.CANCELLED.getValue(), idOrder);
-        return ResponseEntity.ok().build();
     }
 
     @Override
@@ -107,7 +107,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public ResponseEntity<?> confirmDeliveryOfFunds(Long idInvoice) {
+    public void confirmDeliveryOfFunds(Long idInvoice) {
         val invoice = invoiceRepository.findById(idInvoice).get();
         invoice.setStatus(InvoiceStatus.PAID.getValue());
         val now = new Date();
@@ -127,20 +127,19 @@ public class InvoiceServiceImpl implements InvoiceService {
         invoice.setEndOfThePass(dateCount.getTime());
         invoiceRepository.save(invoice);
         clientRepository.updateEndOfThePassClient(invoice.getEndOfThePass(), invoice.getUserAppClient().getClient().getId());
-        return ResponseEntity.ok().build();
     }
 
     @Override
-    public ResponseEntity<?> isPending() {
+    public InvoiceCreateIsPendingInvoiceResponse isPending() {
         if (invoiceRepository.countStatus(UserAppData.getId(), InvoiceStatus.UNPAID.getValue()) >= 1) {
-            return ResponseEntity.ok(new InvoiceCreateIsPendingInvoiceResponse(true));
+            return new InvoiceCreateIsPendingInvoiceResponse(true);
         } else {
-            return ResponseEntity.ok(new InvoiceCreateIsPendingInvoiceResponse(false));
+            return new InvoiceCreateIsPendingInvoiceResponse(false);
         }
     }
 
     @Override
-    public ResponseEntity<?> saveInvoiceByReceptionistOrAdmin(Long gymMembershipId, Long numberCard) {
+    public void saveInvoiceByReceptionistOrAdmin(Long gymMembershipId, Long numberCard) {
         val userAppClient = userAppRepository.getUserClientByNumberCard(numberCard);
         val gymMembership = gymMembershipRepository.findById(gymMembershipId).get();
         val invoiceClientData = requestDataIsTheSameLikeInDatabase(userAppClient, gymMembershipId);
@@ -148,7 +147,6 @@ public class InvoiceServiceImpl implements InvoiceService {
                 TypeOfTransaction.IN_CLUB.getValue(), gymMembership);
         val invoiceSavedId = invoiceRepository.save(invoice).getId();
         confirmDeliveryOfFunds(invoiceSavedId);
-        return ResponseEntity.ok().build();
     }
 
     private InvoiceCreateRequest requestDataIsTheSameLikeInDatabase(UserApp userApp, Long gymMembershipId) {
@@ -171,25 +169,23 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public ResponseEntity<?> getPaidInvoiceById(Long invoiceId) {
+    public InvoiceResponse getPaidInvoiceById(Long invoiceId) {
         val invoice = invoiceRepository.getInvoiceById(invoiceId);
         if (invoice.getUserAppClient().getId() != UserAppData.getId() || !invoice.getStatus().equals(InvoiceStatus.PAID.getValue())) {
-            return ResponseEntity.badRequest().body("Invalid invoice id");
-        } else {
-            val response = InvoiceResponse.toResponse(invoice);
-            return ResponseEntity.ok(response);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid invoice id");
         }
+        return InvoiceResponse.toResponse(invoice);
+
     }
 
     @Override
-    public ResponseEntity<?> getDataTransferByUnpaidInvoiceId(Long invoiceId) {
+    public InvoiceDataTransferResponse getDataTransferByUnpaidInvoiceId(Long invoiceId) {
         val invoice = invoiceRepository.getInvoiceById(invoiceId);
         if (invoice.getUserAppClient().getId() != UserAppData.getId() || !invoice.getStatus().equals(InvoiceStatus.UNPAID.getValue())) {
-            return ResponseEntity.badRequest().body("Invalid invoice id");
-        } else {
-            val response = InvoiceDataTransferResponse.toResponse(invoice);
-            return ResponseEntity.ok(response);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid invoice id");
         }
+        return InvoiceDataTransferResponse.toResponse(invoice);
+
     }
 }
 

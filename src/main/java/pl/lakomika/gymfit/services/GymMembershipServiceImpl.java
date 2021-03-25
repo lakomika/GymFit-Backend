@@ -4,8 +4,9 @@ import lombok.val;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import pl.lakomika.gymfit.DTO.gymMembership.GymMemberShipAllDataResponse;
 import pl.lakomika.gymfit.DTO.gymMembership.GymMemberShipsResponse;
 import pl.lakomika.gymfit.DTO.gymMembership.GymMembershipAddRequest;
@@ -27,9 +28,9 @@ public class GymMembershipServiceImpl implements GymMembershipService {
     }
 
     @Override
-    public ResponseEntity<?> save(GymMembershipAddRequest gymMembershipRequest) {
+    public void save(GymMembershipAddRequest gymMembershipRequest) {
         if (gymMembershipRequest.getNumberOfMonths() < 1 || gymMembershipRequest.getNumberOfMonths() > 12) {
-            return ResponseEntity.badRequest().body("Bad number of months");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad number of months");
         }
         val priceTotal = gymMembershipRequest
                 .getPriceMonthGross()
@@ -53,7 +54,6 @@ public class GymMembershipServiceImpl implements GymMembershipService {
                 .priceMonthNet(priceMonthNet)
                 .build();
         gymMembershipRepository.save(gymMembership);
-        return ResponseEntity.ok().build();
     }
 
     @Override
@@ -72,18 +72,17 @@ public class GymMembershipServiceImpl implements GymMembershipService {
     }
 
     @Override
-    public ResponseEntity<?> changeStatus(Long id, boolean status) {
+    public void changeStatus(Long id, boolean status) {
         gymMembershipRepository.changeStatus(status, id);
-        return ResponseEntity.ok().build();
     }
 
     @Override
-    public ResponseEntity<?> getActiveGymPassById(Long id) {
+    public GymMemberShipAllDataResponse getActiveGymPassById(Long id) {
         val gymMembership = gymMembershipRepository.getActiveGymPassById(id);
         if (gymMembership != null) {
-            return ResponseEntity.ok(GymMemberShipAllDataResponse.toResponse(gymMembership));
+            return GymMemberShipAllDataResponse.toResponse(gymMembership);
         } else {
-            return ResponseEntity.badRequest().body("Invalid id");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid id");
         }
     }
 }
