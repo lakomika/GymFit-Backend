@@ -86,15 +86,22 @@ A discussion of the possibility of each role is set out [below](#roles).
 
 <ul>
 <li>Java 13</li>
-<li>Spring Boot</li>
-<li>Spring Security</li>
+<li>Spring Boot 2.4.4</li>
+<li>Spring Boot Test 2.4.4</li>
+<li>Spring Boot Devtools 2.4.4</li>
+<li>Spring Data JPA 2.4.4</li>
+<li>Spring Security 2.4.4</li>
 <li>JWT 0.9.1</li>
-<li>Postgresql 11</li>
+<li>PostgreSQL 11 (driver 42.2.19)</li>
 <li>Lombok 1.18.12</li>
 <li>Log4j 2.13.3</li>
+<li>Model Mapper 2.3.9</li>
+<li>Javax Persistence 2.2</li>
 </ul>
 
-## Usage technologies:
+## Usage technologies
+
+<b>Examples of use of technology:</b>
 
 ### Lombok
 
@@ -111,13 +118,21 @@ A discussion of the possibility of each role is set out [below](#roles).
 <b>REST API</b>
 [<li>Controller</li>](../master/src/main/java/pl/lakomika/gymfit/controllers/TaxController.java)
 [<li>Service</li>](../master/src/main/java/pl/lakomika/gymfit/services/InvoiceService.java)
+
+### Spring Data JPA
+
 [<li>Repository</li>](../master/src/main/java/pl/lakomika/gymfit/repository/InvoiceRepository.java)
+[<li>Entity</li>](../master/src/main/java/pl/lakomika/gymfit/entity/Client.java)
 [<li>DTO</li>](../master/src/main/java/pl/lakomika/gymfit/DTO/invoice/InvoiceCreateClientDataRequest.java)
 
 ### Spring Security
 
 [<li>SecurityConfiguration</li>](../master/src/main/java/pl/lakomika/gymfit/configuration/security/SecurityConfiguration.java)
 
-### Postgresql
+### PostgreSQL
 
 [<li>Repository</li>](../master/src/main/java/pl/lakomika/gymfit/repository/InvoiceRepository.java)
+
+### Model Mapper
+
+[<li>Object to DTO</li>](../master/src/main/java/pl/lakomika/gymfit/DTO/invoice/InvoicesPendingResponse.java)
